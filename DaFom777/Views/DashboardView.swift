@@ -12,7 +12,9 @@ struct DashboardView: View {
     @State private var showingFilterMenu = false
     @State private var showingCreateTask = false
     @State private var showingCreateProject = false
-    @State private var selectedTab = 0
+    @State private var showingProjectDetail = false
+    @State private var selectedProject: Project?
+    @Binding var selectedTab: Int
     
     var body: some View {
         NavigationView {
@@ -32,11 +34,11 @@ struct DashboardView: View {
                         QuickActionsSection(viewModel: viewModel)
                         
                         // Tasks Section
-                        TasksSection(viewModel: viewModel)
+                                                    TasksSection(viewModel: viewModel, selectedTab: $selectedTab)
                         
                         // Projects Section
                         if !viewModel.projects.isEmpty {
-                            ProjectsSection(viewModel: viewModel)
+                            ProjectsSection(viewModel: viewModel, selectedTab: $selectedTab, selectedProject: $selectedProject, showingProjectDetail: $showingProjectDetail)
                         }
                         
                         // Productivity Insights
@@ -112,6 +114,11 @@ struct DashboardView: View {
                 }
             }
         }
+        .sheet(isPresented: $showingProjectDetail) {
+            if let project = selectedProject {
+                ProjectDetailSheet(project: project)
+            }
+        }
     }
 }
 
@@ -119,6 +126,7 @@ struct DashboardView: View {
 
 struct HeaderSection: View {
     @ObservedObject var viewModel: DashboardViewModel
+    @AppStorage("user_name") private var userName = "John Doe"
     
     var body: some View {
         VStack(spacing: 16) {
@@ -140,7 +148,7 @@ struct HeaderSection: View {
                     .fill(Color.appAccent)
                     .frame(width: 50, height: 50)
                     .overlay(
-                        Text("JD")
+                        Text(userName.initials)
                             .font(.headline.bold())
                             .foregroundColor(.black)
                     )
@@ -368,6 +376,7 @@ struct AddTaskCard: View {
 
 struct TasksSection: View {
     @ObservedObject var viewModel: DashboardViewModel
+    @Binding var selectedTab: Int
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -407,7 +416,7 @@ struct TasksSection: View {
                     
                     if viewModel.filteredTasks.count > 10 {
                         Button("View All Tasks (\(viewModel.filteredTasks.count))") {
-                            // Navigate to full task list
+                            selectedTab = 1 // Switch to Tasks tab
                         }
                         .foregroundColor(.appAccent)
                         .padding()
@@ -422,6 +431,9 @@ struct TasksSection: View {
 
 struct ProjectsSection: View {
     @ObservedObject var viewModel: DashboardViewModel
+    @Binding var selectedTab: Int
+    @Binding var selectedProject: Project?
+    @Binding var showingProjectDetail: Bool
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -433,7 +445,7 @@ struct ProjectsSection: View {
                 Spacer()
                 
                 Button("View All") {
-                    // Navigate to projects view
+                    selectedTab = 2 // Switch to Projects tab
                 }
                 .foregroundColor(.appAccent)
                 .font(.caption)
@@ -442,7 +454,8 @@ struct ProjectsSection: View {
             LazyVStack(spacing: 12) {
                 ForEach(viewModel.getRecentProjects(), id: \.id) { project in
                     ProjectCard(project: project) {
-                        // Navigate to project detail
+                        selectedProject = project
+                        showingProjectDetail = true
                     }
                 }
             }
@@ -744,5 +757,5 @@ struct SortOptionButton: View {
 }
 
 #Preview {
-    DashboardView()
+    DashboardView(selectedTab: .constant(0))
 }

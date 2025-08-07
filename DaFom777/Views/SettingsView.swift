@@ -22,6 +22,7 @@ struct SettingsView: View {
     @State private var showingAbout = false
     @State private var showingExportData = false
     @State private var showingDeleteData = false
+    @State private var showingEditProfile = false
     
     private let viewOptions = ["Dashboard", "Kanban", "Calendar"]
     
@@ -33,7 +34,7 @@ struct SettingsView: View {
                 
                 List {
                     // Profile Section
-                    ProfileSection(userName: userName, userRole: userRole)
+                    ProfileSection(userName: userName, userRole: userRole, showingEditProfile: $showingEditProfile)
                     
                     // Preferences Section
                     PreferencesSection(
@@ -79,6 +80,9 @@ struct SettingsView: View {
         .sheet(isPresented: $showingExportData) {
             ExportDataView()
         }
+        .sheet(isPresented: $showingEditProfile) {
+            EditProfileView(userName: $userName, userRole: $userRole)
+        }
         .confirmationDialog(
             "Delete All Data",
             isPresented: $showingDeleteData
@@ -119,6 +123,7 @@ struct SettingsView: View {
 struct ProfileSection: View {
     let userName: String
     let userRole: String
+    @Binding var showingEditProfile: Bool
     
     var body: some View {
         Section {
@@ -156,7 +161,7 @@ struct ProfileSection: View {
                 Spacer()
                 
                 Button("Edit") {
-                    // Navigate to profile editing
+                    showingEditProfile = true
                 }
                 .foregroundColor(.appAccent)
                 .font(.subheadline)
@@ -456,7 +461,7 @@ struct AboutSection: View {
             
             // Support
             Button {
-                // Open support URL or email
+                openSupportEmail()
             } label: {
                 HStack {
                     Label("Support & Feedback", systemImage: "envelope")
@@ -473,7 +478,7 @@ struct AboutSection: View {
             
             // Privacy Policy
             Button {
-                // Open privacy policy
+                openPrivacyPolicy()
             } label: {
                 HStack {
                     Label("Privacy Policy", systemImage: "hand.raised")
@@ -489,6 +494,26 @@ struct AboutSection: View {
             .padding(.vertical, 4)
         }
         .listRowBackground(Color.white.opacity(0.05))
+    }
+    
+    private func openSupportEmail() {
+        // Create support email
+        let email = "support@taskmasterpro.com"
+        let subject = "TaskMaster Pro Support Request"
+        let body = "Please describe your issue or feedback here..."
+        
+        if let url = URL(string: "mailto:\(email)?subject=\(subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&body=\(body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")") {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            }
+        }
+    }
+    
+    private func openPrivacyPolicy() {
+        // Open privacy policy URL
+        if let url = URL(string: "https://taskmasterpro.com/privacy") {
+            UIApplication.shared.open(url)
+        }
     }
 }
 
@@ -736,6 +761,104 @@ struct ExportItem: View {
                 .foregroundColor(.white)
             
             Spacer()
+        }
+    }
+}
+
+// MARK: - Edit Profile View
+
+struct EditProfileView: View {
+    @Binding var userName: String
+    @Binding var userRole: String
+    @Environment(\.dismiss) private var dismiss
+    
+    @State private var editingName: String = ""
+    @State private var editingRole: String = ""
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Profile Information")) {
+                    HStack {
+                        Text("Name")
+                        Spacer()
+                        TextField("Enter your name", text: $editingName)
+                            .multilineTextAlignment(.trailing)
+                            .foregroundColor(.primary)
+                    }
+                    
+                    HStack {
+                        Text("Role")
+                        Spacer()
+                        TextField("Enter your role", text: $editingRole)
+                            .multilineTextAlignment(.trailing)
+                            .foregroundColor(.primary)
+                    }
+                }
+                
+                Section(header: Text("Avatar")) {
+                    HStack {
+                        Circle()
+                            .fill(Color.appAccent)
+                            .frame(width: 60, height: 60)
+                            .overlay(
+                                Text(editingName.isEmpty ? userName.initials : editingName.initials)
+                                    .font(.title2.bold())
+                                    .foregroundColor(.black)
+                            )
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(editingName.isEmpty ? userName : editingName)
+                                .font(.headline)
+                                .foregroundColor(.primary)
+                            
+                            Text(editingRole.isEmpty ? userRole : editingRole)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Spacer()
+                    }
+                    .padding(.vertical, 8)
+                }
+                
+                Section(footer: Text("Changes will be saved automatically when you close this screen.")) {
+                    EmptyView()
+                }
+            }
+            .navigationTitle("Edit Profile")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .foregroundColor(.appAccent)
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        saveProfile()
+                        dismiss()
+                    }
+                    .foregroundColor(.appAccent)
+                    .font(.body.weight(.semibold))
+                }
+            }
+        }
+        .onAppear {
+            editingName = userName
+            editingRole = userRole
+        }
+    }
+    
+    private func saveProfile() {
+        if !editingName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            userName = editingName.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        
+        if !editingRole.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            userRole = editingRole.trimmingCharacters(in: .whitespacesAndNewlines)
         }
     }
 }

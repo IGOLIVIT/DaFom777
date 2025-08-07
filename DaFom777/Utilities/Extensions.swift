@@ -38,6 +38,7 @@ extension Color {
     
     // App Color Scheme
     static let appBackground = Color(hex: "#3e4464")
+    static let appSecondary = Color(hex: "#4a5078")
     static let appAccent = Color(hex: "#fcc418")
     static let appSuccess = Color(hex: "#3cc45b")
     static let appDanger = Color(hex: "#e74c3c")
@@ -118,9 +119,11 @@ extension String {
     }
     
     var initials: String {
-        let components = self.components(separatedBy: .whitespacesAndNewlines)
+        let components = self.trimmingCharacters(in: .whitespacesAndNewlines)
+            .components(separatedBy: .whitespacesAndNewlines)
+            .filter { !$0.isEmpty }
         let initials = components.compactMap { $0.first }.map { String($0).uppercased() }
-        return initials.joined()
+        return initials.prefix(2).joined() // Ограничиваем до 2 инициалов
     }
     
     func highlight(query: String, color: Color = .appAccent) -> AttributedString {

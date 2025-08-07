@@ -81,7 +81,7 @@ struct MainTabView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            DashboardView()
+            DashboardView(selectedTab: $selectedTab)
                 .tabItem {
                     Image(systemName: selectedTab == 0 ? "house.fill" : "house")
                     Text("Dashboard")
@@ -190,6 +190,8 @@ struct TasksListView: View {
 struct ProjectsListView: View {
     @StateObject private var viewModel = DashboardViewModel()
     @State private var showingCreateProject = false
+    @State private var showingProjectDetail = false
+    @State private var selectedProject: Project?
     
     var body: some View {
         NavigationView {
@@ -210,7 +212,8 @@ struct ProjectsListView: View {
                         LazyVStack(spacing: 16) {
                             ForEach(viewModel.projects, id: \.id) { project in
                                 ProjectCard(project: project) {
-                                    // Navigate to project detail
+                                    selectedProject = project
+                                    showingProjectDetail = true
                                 }
                             }
                         }
@@ -234,6 +237,11 @@ struct ProjectsListView: View {
         .sheet(isPresented: $showingCreateProject) {
             CreateProjectView { project in
                 viewModel.addProject(project)
+            }
+        }
+        .sheet(isPresented: $showingProjectDetail) {
+            if let project = selectedProject {
+                ProjectDetailSheet(project: project)
             }
         }
     }
@@ -383,4 +391,154 @@ struct CompletionTrendChart: View {
         }
         .frame(maxWidth: .infinity)
     }
+}
+
+// MARK: - Project Detail Sheet
+
+struct ProjectDetailSheet: View {
+    let project: Project
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    // Project Header
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Image(systemName: project.type.icon)
+                                .foregroundColor(.appAccent)
+                                .font(.title2)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(project.name)
+                                    .font(.title2.bold())
+                                    .foregroundColor(.white)
+                                
+                                Text(project.type.rawValue.capitalized)
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            // Project Status
+                            Text(project.status.rawValue.capitalized)
+                                .font(.caption.bold())
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color(hex: project.status == .completed ? "#3cc45b" : "#fcc418"))
+                                .foregroundColor(.black)
+                                .cornerRadius(12)
+                        }
+                        
+                        if !project.description.isEmpty {
+                            Text(project.description)
+                                .font(.body)
+                                .foregroundColor(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                    .padding()
+                    .background(Color.appSecondary)
+                    .cornerRadius(12)
+                    
+                    // Project Details
+                    VStack(alignment: .leading, spacing: 16) {
+                        DetailRow(title: "Start Date", value: project.startDate, format: .date(style: .medium))
+                        
+                        if let deadline = project.deadline {
+                            DetailRow(title: "Deadline", value: deadline, format: .date(style: .medium))
+                        }
+                        
+                        if let endDate = project.endDate {
+                            DetailRow(title: "End Date", value: endDate, format: .date(style: .medium))
+                        }
+                        
+                        DetailRow(title: "Team Members", value: "\(project.teamMembers.count) members")
+                        
+                        if !project.tags.isEmpty {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Tags")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                
+                                LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))], spacing: 8) {
+                                    ForEach(project.tags, id: \.self) { tag in
+                                        Text(tag)
+                                            .font(.caption)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(Color.appAccent.opacity(0.2))
+                                            .foregroundColor(.appAccent)
+                                            .cornerRadius(8)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding()
+                    .background(Color.appSecondary)
+                    .cornerRadius(12)
+                    
+                    Spacer()
+                }
+                .padding()
+            }
+            .background(Color.appBackground)
+            .navigationTitle("Project Details")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                    .foregroundColor(.appAccent)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Detail Row
+
+struct DetailRow: View {
+    let title: String
+    let value: String
+    
+    init(title: String, value: String) {
+        self.title = title
+        self.value = value
+    }
+    
+    init<T>(title: String, value: T, format: DetailRowFormat) {
+        self.title = title
+        
+        switch format {
+        case .date(let style):
+            if let date = value as? Date {
+                let formatter = DateFormatter()
+                formatter.dateStyle = style
+                self.value = formatter.string(from: date)
+            } else {
+                self.value = "\(value)"
+            }
+        }
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.subheadline.weight(.medium))
+                .foregroundColor(.appAccent)
+            
+            Text(value)
+                .font(.body)
+                .foregroundColor(.white)
+        }
+    }
+}
+
+enum DetailRowFormat {
+    case date(style: DateFormatter.Style)
 }

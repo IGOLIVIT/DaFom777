@@ -22,6 +22,7 @@ class DashboardViewModel: ObservableObject {
     @Published var selectedTask: TaskItem?
     @Published var showingCreateTask = false
     @Published var showingCreateProject = false
+    @Published var showingAllProjects = false
     @Published var refreshing = false
     
     // Dashboard Stats
