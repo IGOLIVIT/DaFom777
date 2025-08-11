@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		78B048A92E4938D50096567D /* Dvr45.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B048A82E4938D50096567D /* Dvr45.swift */; };
+		78B048AB2E4938DE0096567D /* Svre43.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B048AA2E4938DE0096567D /* Svre43.swift */; };
+		78B048AD2E4938E50096567D /* Wbgf13.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B048AC2E4938E50096567D /* Wbgf13.swift */; };
 		78B92D2A2E429C3C00572A3C /* DaFom777App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B92D292E429C3C00572A3C /* DaFom777App.swift */; };
 		78B92D2C2E429C3C00572A3C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B92D2B2E429C3C00572A3C /* ContentView.swift */; };
 		78B92D2E2E429C3D00572A3C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 78B92D2D2E429C3D00572A3C /* Assets.xcassets */; };
@@ -32,6 +35,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		78B048A82E4938D50096567D /* Dvr45.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dvr45.swift; sourceTree = "<group>"; };
+		78B048AA2E4938DE0096567D /* Svre43.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Svre43.swift; sourceTree = "<group>"; };
+		78B048AC2E4938E50096567D /* Wbgf13.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wbgf13.swift; sourceTree = "<group>"; };
 		78B92D262E429C3C00572A3C /* DaFom777.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DaFom777.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		78B92D292E429C3C00572A3C /* DaFom777App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaFom777App.swift; sourceTree = "<group>"; };
 		78B92D2B2E429C3C00572A3C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -68,9 +74,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		78B048A72E4938C30096567D /* Ext */ = {
+			isa = PBXGroup;
+			children = (
+				78B048A82E4938D50096567D /* Dvr45.swift */,
+				78B048AA2E4938DE0096567D /* Svre43.swift */,
+				78B048AC2E4938E50096567D /* Wbgf13.swift */,
+			);
+			path = Ext;
+			sourceTree = "<group>";
+		};
 		78B92D1D2E429C3C00572A3C = {
 			isa = PBXGroup;
 			children = (
+				78B048A72E4938C30096567D /* Ext */,
 				78B92D5E2E42B0F800572A3C /* Launch Screen.storyboard */,
 				78B92D372E42A19900572A3C /* Models */,
 				78B92D432E42A19900572A3C /* Services */,
@@ -237,9 +254,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78B048AB2E4938DE0096567D /* Svre43.swift in Sources */,
 				78B92D572E42A19900572A3C /* AIService.swift in Sources */,
 				78B92D512E42A19900572A3C /* SettingsView.swift in Sources */,
 				78B92D582E42A19900572A3C /* NotificationService.swift in Sources */,
+				78B048A92E4938D50096567D /* Dvr45.swift in Sources */,
 				78B92D532E42A19900572A3C /* TaskRowView.swift in Sources */,
 				78B92D522E42A19900572A3C /* CreateTaskView.swift in Sources */,
 				78B92D592E42A19900572A3C /* TaskService.swift in Sources */,
@@ -252,6 +271,7 @@
 				78B92D2A2E429C3C00572A3C /* DaFom777App.swift in Sources */,
 				78B92D542E42A19900572A3C /* CreateProjectView.swift in Sources */,
 				78B92D5C2E42A19900572A3C /* OnboardingViewModel.swift in Sources */,
+				78B048AD2E4938E50096567D /* Wbgf13.swift in Sources */,
 				78B92D4F2E42A19900572A3C /* Task.swift in Sources */,
 				78B92D562E42A19900572A3C /* OnboardingView.swift in Sources */,
 				78B92D4D2E42A19900572A3C /* User.swift in Sources */,
@@ -402,7 +422,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = IOI.DaFom777;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -436,7 +456,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = IOI.DaFom777;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
